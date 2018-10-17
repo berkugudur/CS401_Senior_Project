@@ -9,9 +9,9 @@ expected_args = ["file", "source-file", "target-file", "print"]
 printable_values = ["action", "state", "hp", "x", "y"]
 
 if len(sys.argv) < len(expected_args):
-    print "ERROR:",
+    print("ERROR:"),
     for arg in expected_args:
-        print "[" + arg + "]",
+        print("[" + arg + "]"),
     sys.exit(0)
 
 args = dict(zip(expected_args, sys.argv))
@@ -41,8 +41,8 @@ def get_player_values(player_data):
 
 
 def print_frame(frame_data):
-    print str(frame_data["current_frame"]) + "," + print_player_values(frame_data["P1"]) + "," + print_player_values(
-        frame_data["P2"])
+    print (str(frame_data["current_frame"]) + "," + print_player_values(frame_data["P1"]) + "," + print_player_values(
+        frame_data["P2"]))
 
 
 def write_round(round_data, writer):
