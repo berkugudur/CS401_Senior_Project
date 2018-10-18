@@ -81,12 +81,10 @@ def get_action_type_map(reader):
 
 
 # P2 is the human who will be copied.
-
 def prepare_frame_prev(round_data):
     prepared_frames = []
     prev_frame = round_data[0]
     for frame_data in round_data:
-        p1 = frame_data["P1"]
         p2 = frame_data["P2"]
         if get_player_values(p2)[0] != get_player_values(prev_frame["P2"])[0]:
             prepared_frames.append(frame_data)
@@ -96,13 +94,10 @@ def prepare_frame_prev(round_data):
 
 def prepare_frame_act(round_data):
     prepared_frames = []
-    prev_frame = round_data[0]
     for frame_data in round_data:
-        p1 = frame_data["P1"]
         p2 = frame_data["P2"]
         if get_player_values(p2)[0] not in action_type_map["RECOV"] + action_type_map["BASE"]:
             prepared_frames.append(frame_data)
-        prev_frame = frame_data
     return prepared_frames
 
 
@@ -110,7 +105,6 @@ def prepare_frame_prev_act(round_data):
     prepared_frames = []
     prev_frame = round_data[0]
     for frame_data in round_data:
-        p1 = frame_data["P1"]
         p2 = frame_data["P2"]
         if get_player_values(p2)[0] != get_player_values(prev_frame["P2"])[0] and (
                     get_player_values(p2)[0] not in action_type_map["RECOV"] + action_type_map["BASE"] ):
