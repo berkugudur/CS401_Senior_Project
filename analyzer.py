@@ -80,6 +80,19 @@ def get_action_type_map(reader):
     return type_map
 
 
+def prepare_frame(round_data):
+    prepared_frames = []
+    prev_frame = round_data[0]
+    for frame_data in round_data:
+        p1 = frame_data["P1"]
+        p2 = frame_data["P2"]
+        if get_player_values(p2)[0] != get_player_values(prev_frame["P2"])[0] and (
+            get_player_values(p2)[0] not in action_type_map["RECOV"]):
+            prepared_frames.append(frame_data)
+        prev_frame = frame_data
+    return prepared_frames
+
+
 # end of functions
 
 data_ = json.load(open(args["source-file"], "r"))
@@ -87,5 +100,6 @@ writer_ = csv.writer(open(args["target-file"], "w"), delimiter=',')
 reader_ = csv.reader(open("data/ActionTypes.csv"))
 
 action_type_map = get_action_type_map(reader_)
+
 for round_data in data_["rounds"]:
-    write_round(round_data, writer_)
+    write_round(prepare_frame(round_data), writer_)
