@@ -107,10 +107,11 @@ def prepare_frame_prev_act(round_data):
     for frame_data in round_data:
         p2 = frame_data["P2"]
         if get_player_values(p2)[0] != get_player_values(prev_frame["P2"])[0] and (
-                    get_player_values(p2)[0] not in action_type_map["RECOV"] + action_type_map["BASE"] ):
+                    get_player_values(p2)[0] not in action_type_map["RECOV"] + action_type_map["BASE"]):
             prepared_frames.append(frame_data)
         prev_frame = frame_data
     return prepared_frames
+
 
 # end of functions
 
@@ -120,5 +121,6 @@ reader_ = csv.reader(open("data/ActionTypes.csv"))
 
 action_type_map = get_action_type_map(reader_)
 
+# change the prepare_frame function with the one you want
 for round_data in data_["rounds"]:
     write_round(prepare_frame_act(round_data), writer_)
