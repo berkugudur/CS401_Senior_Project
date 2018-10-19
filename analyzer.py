@@ -5,7 +5,8 @@ import csv
 # source-file [ *.json ]
 # target-file [ *.csv ]
 # print [ 1 / 0 ]
-expected_args = ["file", "source-file", "target-file", "print"]
+# function [ 0 / 1 / 2 ] = [prev, act, prev_act]
+expected_args = ["file", "source-file", "target-file", "print", "function"]
 printable_values = ["action", "state", "hp", "x", "y"]
 
 if len(sys.argv) < len(expected_args):
@@ -123,4 +124,9 @@ action_type_map = get_action_type_map(reader_)
 
 # change the prepare_frame function with the one you want
 for round_data in data_["rounds"]:
-    write_round(prepare_frame_act(round_data), writer_)
+    if args["function"] == 0:
+        write_round(prepare_frame_prev(round_data), writer_)
+    elif args["function"] == 1:
+        write_round(prepare_frame_act(round_data), writer_)
+    elif args["function"] == 2:
+        write_round(prepare_frame_prev_act(round_data), writer_)
