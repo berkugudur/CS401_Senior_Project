@@ -119,4 +119,3 @@ if __name__ == "__main__":
     out_file_path = data_folder + "standing_consecutive_recov_removed_" + source_file_name + ".csv"
     writer = csv.writer(open(out_file_path, "w"), delimiter=',')
     write_round(recov_actions_removed_round, writer)
-
