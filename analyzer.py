@@ -115,7 +115,14 @@ if __name__ == "__main__":
     write_round(consecutive_actions_removed_round, writer)
 
     # Remove frames that both player standing and learning player is recovering and write csv
-    recov_actions_removed_round = remove_recov_frames(consecutive_actions_removed_round)
+    # Remove frames that has consecutive same actions write csv
+    consecutive_recov_actions_removed_round = remove_recov_frames(consecutive_actions_removed_round)
     out_file_path = data_folder + "standing_consecutive_recov_removed_" + source_file_name + ".csv"
+    writer = csv.writer(open(out_file_path, "w"), delimiter=',')
+    write_round(consecutive_recov_actions_removed_round, writer)
+
+    # Remove frames that both player standing and learning player is recovering and write csv
+    recov_actions_removed_round = remove_recov_frames(standing_actions_removed_round)
+    out_file_path = data_folder + "standing_recov_removed_" + source_file_name + ".csv"
     writer = csv.writer(open(out_file_path, "w"), delimiter=',')
     write_round(recov_actions_removed_round, writer)
