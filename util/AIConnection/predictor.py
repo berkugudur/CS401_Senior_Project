@@ -31,5 +31,3 @@ class Predictor:
 
         predicted_action = self.model.predict(data)
         return decode(predicted_action)
-        
-p = Predictor("../../notebooks/punch_according_to_hp_test/out")
