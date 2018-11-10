@@ -3,7 +3,7 @@ import time
 
 from predictor import Predictor
 
-predictor = Predictor("../../notebooks/punch_according_to_hp_test/out")
+predictor = Predictor("../../notebooks/learn_from_thunder_bot/out")
 
 input("Start ?")
 
