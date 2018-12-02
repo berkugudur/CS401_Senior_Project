@@ -18,6 +18,10 @@ class Predictor:
         self.p2_hp_normalizer = load_normalizer(self.model_path + "/p2_hp_norm.save")
         self.x_normalizer = load_normalizer(self.model_path + "/x_norm.save")
         self.y_normalizer = load_normalizer(self.model_path + "/y_norm.save")
+        self.xp1_normalizer = load_normalizer(self.model_path + "/xp1_norm.save")
+        self.xp2_normalizer = load_normalizer(self.model_path + "/xp2_norm.save")
+        self.yp1_normalizer = load_normalizer(self.model_path + "/yp1_norm.save")
+        self.yp2_normalizer = load_normalizer(self.model_path + "/yp2_norm.save")
         self.model._make_predict_function()
 
     def predict(self, p1_action, p1_hp, p1_x, p1_y, p2_hp, p2_x, p2_y):
@@ -27,6 +31,10 @@ class Predictor:
         data.extend(self.p2_hp_normalizer.normalize([p2_hp]))
         data.extend(self.x_normalizer.normalize([p1_x - p2_x]))
         data.extend(self.y_normalizer.normalize([p1_y - p2_y]))
+        data.extend(self.xp1_normalizer.normalize([p1_x]))
+        data.extend(self.xp2_normalizer.normalize([p2_x]))
+        data.extend(self.yp1_normalizer.normalize([p1_y]))
+        data.extend(self.yp2_normalizer.normalize([p2_y]))
 
         data = np.array([[item for sublist in data for item in sublist]])
 

@@ -41,6 +41,9 @@ manager = gateway.entry_point
 # Add your AI here, don't forget import. If it is Java AI second parameter must be None
 add_ai("PredictAI", PredictAI(gateway))
 add_ai("Thunder", None)
+add_ai("UtalFighter", None)
+add_ai("BCP", None)
+add_ai("ai", None)
 
 # User Input
 print_ai_list()    
