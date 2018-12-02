@@ -12,5 +12,13 @@ This repository includes our working for our senior project.
   converting them to csv we will remove some unneeded frames for better results.
 
 
-P.S. You have to use python with version 3.6.1. We suggest using virtualenv, requirements.txt file will be added soon.
+### Prerequisites
+
+You have to install libraries using pip with the requirements file. 
+
+```
+pip install -r requirements.txt
+```
+
+Besides of these libraries you have to install [Jupyter Notebook](http://jupyter.org/install.html) for using notebooks.
 
