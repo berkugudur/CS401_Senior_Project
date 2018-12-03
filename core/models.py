@@ -65,6 +65,14 @@ class GameData:
     def clone(self):
         return copy.deepcopy(self)
 
+    def statistics(self):
+        def get_statistics_of_round(round):
+            p1_actions = [frame[self.columns.index('P1-action')] for frame in round]
+            p2_actions = [frame[self.columns.index('P2-action')] for frame in round]
+            return Statistic(p1_actions), Statistic(p2_actions)
+
+        return [get_statistics_of_round(round) for round in self.rounds]
+
     def __iter__(self):
         self.iterator_count = 0
         return self
@@ -94,3 +102,32 @@ class GameData:
 
     def __str__(self):
         return "There are {} rounds and {} frames.".format(len(self.rounds), len(self))
+
+
+class Statistic:
+    def __init__(self, actions):
+        self.actions = actions
+        self.distributions = dict()
+
+        for action in actions:
+            self.distributions[action] = self.distributions.get(action, 0) + 1
+
+    def get_count_of_action(self, action):
+        count = self.distributions.get(action, None)
+        if count:
+            return count
+        raise ValueError('This action not exists {}'.format(action))
+
+    def get_distribution_of_action(self, action):
+        count = self.get_count_of_action(action)
+        return count / len(self.actions) * 100
+
+    def __str__(self):
+        msg = ''
+        for action, count in self.distributions.items():
+            msg += '{}: {}, {}%\n'.format(
+                action, 
+                count, 
+                self.get_distribution_of_action(action)
+                )
+        return msg
