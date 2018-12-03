@@ -1,5 +1,6 @@
 import os, csv, datetime, copy
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class Table(pd.DataFrame):
     def __init__(self, data, columns):
@@ -121,6 +122,12 @@ class Statistic:
     def get_distribution_of_action(self, action):
         count = self.get_count_of_action(action)
         return count / len(self.actions) * 100
+
+    def graph(self):
+        plt.bar(range(len(self.distributions)), list(self.distributions.values()), align='center')
+        plt.xticks(range(len(self.distributions)), list(self.distributions.keys()), rotation=70)
+        plt.tight_layout()
+        return plt
 
     def __str__(self):
         msg = ''
