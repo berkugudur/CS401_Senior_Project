@@ -121,7 +121,7 @@ class Statistic:
 
     def get_distribution_of_action(self, action):
         count = self.get_count_of_action(action)
-        return count / len(self.actions) * 100
+        return float(count) / float(len(self.actions)) * 100
 
     def graph(self):
         plt.bar(range(len(self.distributions)), list(self.distributions.values()), align='center')
