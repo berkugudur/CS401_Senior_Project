@@ -1,6 +1,18 @@
 import os, csv, datetime, copy
 import pandas as pd
-import matplotlib.pyplot as plt
+
+ACTION_MAP2 = {
+    'BASE': ['AIR', 'CROUCH', 'STAND'],
+    'MOVE': ['BACK_JUMP', 'BACK_STEP', 'DASH', 'FOR_JUMP', 'FORWARD_WALK', 'JUMP'],
+    'GUARD': ['AIR_GUARD', 'CROUCH_GUARD', 'STAND_GUARD'],
+    'RECOV': ['AIR_GUARD_RECOV', 'AIR_RECOV', 'CHANGE_DOWN', 'CROUCH_GUARD_RECOV', 'CROUCH_RECOV', 'DOWN', 'LANDING',
+              'RISE', 'STAND_GUARD_RECOV', 'STAND_RECOV', 'THROW_HIT', 'THROW_SUFFER'],
+    'SKILL': ['AIR_A', 'AIR_B', 'AIR_DA', 'AIR_DB', 'AIR_FA', 'AIR_D_DB_BA', 'AIR_D_DB_BB', 'AIR_D_DF_FA', 'AIR_D_DF_FB',
+              'AIR_FA', 'AIR_FB', 'AIR_F_D_DFA', 'AIR_F_D_DFB', 'AIR_UA', 'AIR_UB', 'CROUCH_A', 'CROUCH_B', 'CROUCH_FA',
+              'CROUCH_FB', 'STAND_A', 'STAND_B', 'STAND_FA', 'STAND_FB', 'STAND_D_DB_BA', 'STAND_D_DB_BB', 'STAND_D_DF_FA',
+              'STAND_D_DF_FB', 'STAND_D_DF_FC', 'STAND_F_D_DFA', 'STAND_F_D_DFB', 'THROW_A', 'THROW_B'],
+    'ALL': []
+}
 
 class Table(pd.DataFrame):
     def __init__(self, data, columns):
@@ -30,7 +42,27 @@ class GameData:
         for i, round_data in enumerate(self.rounds):
             self.rounds[i] = f(self.columns, round_data)
         return len_before - len(self)
-        
+    
+    # if count 3, x-3, x-2 .. x .. x+2, x+3 will be added
+    def add_distortion(self, count, action_type):
+        len_before = len(self)
+        for i, round_data in enumerate(self.rounds):
+            self.rounds[i] = self.distortion(self.columns, round_data, count, action_type)
+        return len_before - len(self)
+    
+    def distortion(self, columns, round_data,count,action_type):
+        prepared_frames = []
+        for current_frame in round_data:
+            if current_frame[columns.index("P2-action")] in ACTION_MAP2[action_type] or action_type == "ALL":
+                for i in range(-count, count+1,1):
+                    tmp = current_frame.copy()
+                    tmp[columns.index("P1-x")] += i
+                    tmp[columns.index("P2-x")] += i
+                    prepared_frames.append(tmp)
+            else:   
+                prepared_frames.append(current_frame)
+        return prepared_frames
+
     def table(self):
          return [Table(data=item, columns=self.columns) for item in self.rounds]
 
@@ -67,12 +99,15 @@ class GameData:
         return copy.deepcopy(self)
 
     def statistics(self):
-        def get_statistics_of_round(round):
-            p1_actions = [frame[self.columns.index('P1-action')] for frame in round]
-            p2_actions = [frame[self.columns.index('P2-action')] for frame in round]
+        def get_statistics_of_round(rounds):
+            p1_actions = []
+            p2_actions = []
+            for round in rounds:
+                p1_actions = p1_actions + [frame[self.columns.index('P1-action')] for frame in round]
+                p2_actions = p2_actions + [frame[self.columns.index('P2-action')] for frame in round]
             return Statistic(p1_actions), Statistic(p2_actions)
-
-        return [get_statistics_of_round(round) for round in self.rounds]
+		
+        return get_statistics_of_round(self.rounds)
 
     def __iter__(self):
         self.iterator_count = 0
@@ -123,16 +158,10 @@ class Statistic:
         count = self.get_count_of_action(action)
         return float(count) / float(len(self.actions)) * 100
 
-    def graph(self):
-        plt.bar(range(len(self.distributions)), list(self.distributions.values()), align='center')
-        plt.xticks(range(len(self.distributions)), list(self.distributions.keys()), rotation=70)
-        plt.tight_layout()
-        return plt
-
     def __str__(self):
         msg = ''
         for action, count in self.distributions.items():
-            msg += '{}: {}, {}%\n'.format(
+            msg += '{},{},{}%\n'.format(
                 action, 
                 count, 
                 self.get_distribution_of_action(action)
