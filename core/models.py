@@ -14,6 +14,19 @@ ACTION_MAP2 = {
     'ALL': []
 }
 
+ACTION_MAP2 = {
+    'BASE': ['AIR', 'CROUCH', 'STAND'],
+    'MOVE': ['BACK_JUMP', 'BACK_STEP', 'DASH', 'FOR_JUMP', 'FORWARD_WALK', 'JUMP'],
+    'GUARD': ['AIR_GUARD', 'CROUCH_GUARD', 'STAND_GUARD'],
+    'RECOV': ['AIR_GUARD_RECOV', 'AIR_RECOV', 'CHANGE_DOWN', 'CROUCH_GUARD_RECOV', 'CROUCH_RECOV', 'DOWN', 'LANDING',
+              'RISE', 'STAND_GUARD_RECOV', 'STAND_RECOV', 'THROW_HIT', 'THROW_SUFFER'],
+    'SKILL': ['AIR_A', 'AIR_B', 'AIR_DA', 'AIR_DB', 'AIR_FA', 'AIR_D_DB_BA', 'AIR_D_DB_BB', 'AIR_D_DF_FA', 'AIR_D_DF_FB',
+              'AIR_FA', 'AIR_FB', 'AIR_F_D_DFA', 'AIR_F_D_DFB', 'AIR_UA', 'AIR_UB', 'CROUCH_A', 'CROUCH_B', 'CROUCH_FA',
+              'CROUCH_FB', 'STAND_A', 'STAND_B', 'STAND_FA', 'STAND_FB', 'STAND_D_DB_BA', 'STAND_D_DB_BB', 'STAND_D_DF_FA',
+              'STAND_D_DF_FB', 'STAND_D_DF_FC', 'STAND_F_D_DFA', 'STAND_F_D_DFB', 'THROW_A', 'THROW_B'],
+    'ALL': []
+}
+
 class Table(pd.DataFrame):
     def __init__(self, data, columns):
         pd.DataFrame.__init__(self, data=data)
