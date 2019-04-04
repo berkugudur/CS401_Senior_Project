@@ -1,6 +1,0 @@
-out_p1name_p2name_gameCount_neuronCount_batchCount_filters
-
-0:remove_unpressed_frames
-1:remove_both_standing_frames
-2:remove_same_consecutive_actions
-3:remove_recov_frames
