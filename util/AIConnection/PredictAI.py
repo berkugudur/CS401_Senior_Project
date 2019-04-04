@@ -3,7 +3,7 @@ from predictor import Predictor
 
 class PredictAI(object):
     def __init__(self, gateway):
-        self.predictor = Predictor("../../notebooks/learn_from_thunder_bot/out")
+        self.predictor = Predictor("gen")
         self.gateway = gateway
         
     def close(self):

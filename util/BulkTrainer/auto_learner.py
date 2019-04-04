@@ -104,53 +104,18 @@ tr_data, tr_labels = process_data(training_data)
 INPUT_LAYER_SIZE = tr_data.shape[1]
 OUTPUT_LAYER_SIZE = tr_labels.shape[1]
 
-def create_model0():
+def create_model(neuron_count):
     model = Sequential()
-    model.add(Dense(64, input_dim=INPUT_LAYER_SIZE, activation='relu'))
+    model.add(Dense(neuron_count, input_dim=INPUT_LAYER_SIZE, activation='relu'))
     model.add(Dense(OUTPUT_LAYER_SIZE, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     
     return model
 
-def create_model1():
-    model = Sequential()
-    model.add(Dense(128, input_dim=INPUT_LAYER_SIZE, activation='relu'))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dense(OUTPUT_LAYER_SIZE, activation='softmax'))
-
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    
-    return model
-
-def create_model2():
-    model = Sequential()
-    model.add(Dense(256, input_dim=INPUT_LAYER_SIZE, activation='relu'))
-    model.add(Dense(128, activation='relu'))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dense(OUTPUT_LAYER_SIZE, activation='softmax'))
-
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    
-    return model
-
-def create_model3():
-    model = Sequential()
-    model.add(Dense(512, input_dim=INPUT_LAYER_SIZE, activation='relu'))
-    model.add(Dense(256, activation='relu'))
-    model.add(Dense(128, activation='relu'))
-    model.add(Dense(64, activation='relu'))
-    model.add(Dense(OUTPUT_LAYER_SIZE, activation='softmax'))
-
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    
-    return model
-
-
-COMPLEXITIES = [create_model0, create_model1, create_model2, create_model3]
-EPOCH = 10
+COMPLEXITIES = [10, 25, 50, 100, 150, 250, 500, 750, 1000, 1500, 2500]
+EPOCH = 500
 BATCH = 32
-
 
 if not os.path.exists(OUT_FOLDER):
     os.makedirs(OUT_FOLDER)
@@ -165,12 +130,12 @@ os.makedirs(SESSION_FOLDER + '/histories')
 
 histories = []
 # Create and run networks
-for index, complexity in enumerate(COMPLEXITIES):
+for complexity in COMPLEXITIES:
     starting_time = time.clock()
-    file_name = str("model" + str(index))
+    file_name = str(complexity)
     
-    model = complexity()
-    print('Model created with {} index.'.format(index))
+    model = create_model(complexity)
+    print('Model created with {} index.'.format(complexity))
     
     # Logging for tensorboard
     tensorboard = TensorBoard(log_dir= SESSION_FOLDER + "/logs/log_{}".format(file_name))
@@ -186,7 +151,7 @@ for index, complexity in enumerate(COMPLEXITIES):
     time_taken = (time.clock() - starting_time) * 1000.0
     
     model_info = {
-        'info': 'One hidden layer ANN with {} index'.format(index),
+        'info': 'One hidden layer ANN with {} neurons'.format(complexity),
         'epoch': EPOCH,
         'batch': BATCH,
         'time_taken': time_taken
