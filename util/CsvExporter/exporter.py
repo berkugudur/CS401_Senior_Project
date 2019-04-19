@@ -4,7 +4,7 @@ import os, sys, csv, json, argparse
 sys.path.append('../../')
 
 from core.json_importer import is_json_file, parse_json_file, parse_all_files
-from core.filters import remove_both_standing_frames, remove_same_consecutive_actions, remove_recov_frames
+from core.filters import remove_both_standing_frames, remove_same_consecutive_actions, remove_recov_frames, remove_unchange_hp
 
 # Initialize parser
 parser = argparse.ArgumentParser(description='Converts json files to filtered csv files.')
@@ -47,6 +47,12 @@ clone.filter(remove_both_standing_frames)
 clone.filter(remove_same_consecutive_actions)
 clone.filter(remove_recov_frames)
 clone.export_csv(file_name="standing_consecutive_recov_removed", columns=printable_values)
+
+
+clone = original_data.clone()
+clone.filter(remove_unchange_hp)
+clone.export_csv(file_name="remove_unchange_hp", columns=printable_values)
+
 
 # Info
 print("Exporting finished successfully. Csv files can be found in /out.")

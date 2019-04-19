@@ -21,6 +21,8 @@ DISTINCT_ACTIONS = [
     'AIR_GUARD', 'CROUCH_RECOV', 'STAND_A', 'CROUCH_A', 'AIR_B', 'AIR_FA', 'AIR', 'FOR_JUMP', 'AIR_A'
     ]
 
+HP_DIFS = [-5,-4,-3,-2,-1,0,1,2,3,4,5]
+
 def one_hot_encode(column):
     encoded = []
     for action in column:
@@ -36,3 +38,11 @@ def _encode(action):
     one_hot = [0] * len(DISTINCT_ACTIONS)
     one_hot[int_rep] = 1
     return one_hot
+	
+def one_hot_encode_hpdif(hpdifs):
+    encoded = []
+    for hpdif in hpdifs:
+        one_hot = [0] * len(HP_DIFS)
+        one_hot[HP_DIFS.index(hpdif)] = 1
+        encoded.append(one_hot)
+    return encoded
