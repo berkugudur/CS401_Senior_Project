@@ -2,6 +2,7 @@ import sys
 from time import sleep
 from py4j.java_gateway import JavaGateway, GatewayParameters, CallbackServerParameters, get_field
 from PredictAI import PredictAI
+from PredictHPAI import PredictHPAI
 
 players = []
 ai_list = []
@@ -39,7 +40,8 @@ gateway = JavaGateway(gateway_parameters=GatewayParameters(port=4242), callback_
 manager = gateway.entry_point
 
 # Add your AI here, don't forget import. If it is Java AI second parameter must be None
-add_ai("PredictAI", PredictAI(gateway))
+#add_ai("PredictAI", PredictAI(gateway))
+add_ai("PredictHPAI", PredictHPAI(gateway))
 add_ai("Thunder", None)
 add_ai("UtalFighter", None)
 add_ai("BCP", None)
