@@ -42,7 +42,7 @@ class PredictHPAI(object):
     
     # Return true if given points are close to do attack actions.
     def are_they_close(self, us_x, us_y, opponent_x, opponent_y):
-        return True    
+        return abs(us_x - opponent_x) < 50
 
     def processing(self):
         if self.frameData.getEmptyFlag() or self.frameData.getRemainingTime() <= 0:
