@@ -1,7 +1,8 @@
 import aiinterface.AIInterface;
 import aiinterface.CommandCenter;
 import java.util.List;
-import py4j.GatewayServer;
+import py4j.ClientServer;
+import struct.CharacterData;
 import struct.FrameData;
 import struct.GameData;
 import struct.Key;
@@ -17,10 +18,21 @@ import struct.Key;
  *
  * Meric Oztiryaki 2019
  */
-public class BotCenter {
+public class BotCenter implements AIInterface {
 
-    List<String> botNames;
-    List<AIInterface> ais;
+    private static final int PORT = 1428;
+
+    private ClientServer clientServer;
+    private PythonDelegate pythonDelegate;
+
+    private List<String> botNames;
+    private List<AIInterface> ais;
+
+    private Key inputKey;
+    private FrameData frameData;
+    private CommandCenter commandCenter;
+    private boolean player;
+    private GameData gameData;
 
     public BotCenter() {
         ResourceLoader<AIInterface> resourceLoader = new ResourceLoader<>("./data/ai/");
@@ -35,10 +47,11 @@ public class BotCenter {
         // Logging
         System.out.println("BotCenter loaded " + ais.size() + " ais.");
         printBots();
-    }
 
-    public int id(String botName) {
-        return botNames.indexOf(botName);
+        // Start py4j gateway.
+        ClientServer clientServer = new ClientServer(null);
+        pythonDelegate = (PythonDelegate) clientServer.getPythonServerEntryPoint(new Class[] { PythonDelegate.class });
+        System.out.println("PY4J connection established");
     }
 
     public void printBots() {
@@ -47,45 +60,83 @@ public class BotCenter {
         }
     }
 
-    public int[] initialize(GameData gameData, boolean b) {
-        int[] results = new int[ais.size()];
+    @Override
+    public int initialize(GameData gameData, boolean player) {
+        this.gameData = gameData;
+        this.player = player;
+        this.inputKey = new Key();
+        this.commandCenter = new CommandCenter();
 
-        for(int i=0; i<ais.size(); i++) {
-            results[i] = ais.get(i).initialize(gameData, b);
+        // Initialize all ais.
+        for(AIInterface ai: ais) {
+            ai.initialize(gameData, player);
         }
 
-        return results;
+        return 0;
     }
 
+    @Override
     public void getInformation(FrameData frameData) {
+        this.frameData = frameData;
+
+        // Pass information to all ais.
         for(AIInterface ai: ais) {
             ai.getInformation(frameData);
         }
     }
 
+    @Override
     public void processing() {
         for(AIInterface ai: ais) {
             ai.processing();
         }
     }
 
-    public Key[] input() {
-        Key[] results = new Key[ais.size()];
-        for(int i=0; i<ais.size(); i++) {
-            results[i] = ais.get(i).input();
+    @Override
+    public Key input() {
+        if (this.frameData.getEmptyFlag() || this.frameData.getRemainingFramesNumber() <= 0) {
+            return this.inputKey;
+        } else if(this.commandCenter.getSkillFlag()) {
+            return this.commandCenter.getSkillKey();
+        } else {
+            this.inputKey.empty();
+            this.commandCenter.skillCancel();
         }
-        return results;
+
+        this.commandCenter.setFrameData(this.frameData, this.player);
+
+        CharacterData us = this.frameData.getCharacter(this.player);
+        CharacterData opponent = this.frameData.getCharacter(!this.player);
+
+        String strongestBotName = pythonDelegate.predictStrongestBot(us.getCenterX(), us.getCenterY(), opponent.getCenterX(), opponent.getCenterY());
+        System.out.println("Python predicted '" + strongestBotName +"' as the strongest bot.");
+
+        AIInterface strongestBot = ais.get(botNames.indexOf(strongestBotName));
+
+        return strongestBot.input();
     }
 
+    @Override
     public void close() {
         for(AIInterface ai: ais) {
             ai.close();
         }
     }
 
+    @Override
     public void roundEnd(int i, int i1, int i2) {
         for(AIInterface ai: ais) {
             ai.roundEnd(i, i1, i2);
         }
     }
+
+    public interface PythonDelegate {
+
+        /*
+         * Predicts the strongest bot and return its name.
+         */
+        String predictStrongestBot(int usX, int usY, int opponentX, int opponentY);
+
+    }
 }
+
