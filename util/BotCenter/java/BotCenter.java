@@ -1,5 +1,6 @@
 import aiinterface.AIInterface;
 import aiinterface.CommandCenter;
+import java.io.IOException;
 import java.util.List;
 import py4j.ClientServer;
 import struct.CharacterData;
@@ -22,8 +23,7 @@ public class BotCenter implements AIInterface {
 
     private static final int PORT = 1428;
 
-    private ClientServer clientServer;
-    private PythonDelegate pythonDelegate;
+    private PythonTunnel pythonTunnel;
 
     private List<String> botNames;
     private List<AIInterface> ais;
@@ -32,7 +32,6 @@ public class BotCenter implements AIInterface {
     private FrameData frameData;
     private CommandCenter commandCenter;
     private boolean player;
-    private GameData gameData;
 
     public BotCenter() {
         ResourceLoader<AIInterface> resourceLoader = new ResourceLoader<>("./data/ai/");
@@ -48,10 +47,14 @@ public class BotCenter implements AIInterface {
         System.out.println("BotCenter loaded " + ais.size() + " ais.");
         printBots();
 
-        // Start py4j gateway.
-        ClientServer clientServer = new ClientServer(null);
-        pythonDelegate = (PythonDelegate) clientServer.getPythonServerEntryPoint(new Class[] { PythonDelegate.class });
-        System.out.println("PY4J connection established");
+        // Create python tunnel
+        try {
+            pythonTunnel = TunnelFactory.open(PORT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("CAN NOT CONNECT TO PYTHON");
+        }
+        System.out.println("Python tunnel established");
     }
 
     public void printBots() {
@@ -62,7 +65,6 @@ public class BotCenter implements AIInterface {
 
     @Override
     public int initialize(GameData gameData, boolean player) {
-        this.gameData = gameData;
         this.player = player;
         this.inputKey = new Key();
         this.commandCenter = new CommandCenter();
@@ -108,7 +110,7 @@ public class BotCenter implements AIInterface {
         CharacterData us = this.frameData.getCharacter(this.player);
         CharacterData opponent = this.frameData.getCharacter(!this.player);
 
-        String strongestBotName = pythonDelegate.predictStrongestBot(us.getCenterX(), us.getCenterY(), opponent.getCenterX(), opponent.getCenterY());
+        String strongestBotName = pythonTunnel.predictStrongestBot(us.getCenterX(), us.getCenterY(), opponent.getCenterX(), opponent.getCenterY());
         System.out.println("Python predicted '" + strongestBotName +"' as the strongest bot.");
 
         AIInterface strongestBot = ais.get(botNames.indexOf(strongestBotName));
