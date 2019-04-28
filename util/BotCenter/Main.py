@@ -1,26 +1,17 @@
-import random
 import socket
+from JavaTunnel import JavaTunnel
 
 HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
 PORT = 1428        # Port to listen on (non-privileged ports are > 1023)
 
-def predictStrongestBot(usX, usY, opponentX, opponentY):
-    print("Predicting strongest bot with parameters usX: {}, usY: {}, opponentX: {}, opponentY: {}".format(usX, usY, opponentX, opponentY))
-    strongest_bot_name = ["Thunder", "BCP"][random.randint(0, 1)] 
+class MessageParser:
 
-    return strongest_bot_name
- 
-
-class JavaTunnel:
-
-    def __init__(self, socket):
-        self.functions = {
-            "predictStrongestBot": predictStrongestBot
-            }
+    def __init__(self, socket, tunnel):
         self.socket = socket
+        self.tunnel = tunnel
         
 
-    def startReceiving(self):
+    def startParsing(self):
         func_name = ""
         argument_size = 0
         arguments = []
@@ -36,14 +27,14 @@ class JavaTunnel:
                     if line_body[0] == "func":
                         argument_size = int(line_body[-1])
                         func_name = line_body[1]
-                        argument_count = 0
                     
                     else: 
                         arguments.append(line)
                         if len(arguments) == argument_size:
                             print("Calling function {} with arguments {}".format(func_name, str(arguments)))
 
-                            returnValue = self.functions[func_name](*arguments) + "\n"
+                            function = getattr(self.tunnel, func_name)
+                            returnValue = function(*arguments) + "\n"
                             
                             print("Return value is {}".format(returnValue))
                             
@@ -51,13 +42,14 @@ class JavaTunnel:
                             print("Return value sended.")
 
                             arguments = []
+                        
                             
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect((HOST, PORT))
- 
-tunnel = JavaTunnel(sock)
-tunnel.startReceiving()
+if __name__ == "__main__":
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((HOST, PORT))
+    
+    parser = MessageParser(sock, JavaTunnel())
+    parser.startParsing()
 
 
 
