@@ -9,9 +9,10 @@ public class PythonTunnel {
         this.connection = connection;
     }
 
-    public String predictStrongestBot(int usX, int usY, int opponentX, int opponentY) {
+    public String predictStrongestBot(String action, int usX, int usY, int opponentX, int opponentY) {
 
-        connection.sendObject("func_predictStrongestBot_4");
+        connection.sendObject("func_predictStrongestBot_5");
+        connection.sendObject(action);
         connection.sendObject(usX);
         connection.sendObject(usY);
         connection.sendObject(opponentX);

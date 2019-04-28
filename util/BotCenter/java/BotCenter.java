@@ -21,7 +21,7 @@ import struct.Key;
  */
 public class BotCenter implements AIInterface {
 
-    private static final int PORT = 1428;
+    private static final int PORT = 1455;
 
     private PythonTunnel pythonTunnel;
 
@@ -110,7 +110,7 @@ public class BotCenter implements AIInterface {
         CharacterData us = this.frameData.getCharacter(this.player);
         CharacterData opponent = this.frameData.getCharacter(!this.player);
 
-        String strongestBotName = pythonTunnel.predictStrongestBot(us.getCenterX(), us.getCenterY(), opponent.getCenterX(), opponent.getCenterY());
+        String strongestBotName = pythonTunnel.predictStrongestBot(opponent.getAction().toString(), us.getCenterX(), us.getCenterY(), opponent.getCenterX(), opponent.getCenterY());
         System.out.println("Python predicted '" + strongestBotName +"' as the strongest bot.");
 
         AIInterface strongestBot = ais.get(botNames.indexOf(strongestBotName));

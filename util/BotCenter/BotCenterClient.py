@@ -1,8 +1,8 @@
 import socket
 from JavaTunnel import JavaTunnel
-
+from BotPredictor import BotPredictor
 HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 1428        # Port to listen on (non-privileged ports are > 1023)
+PORT = 1455        # Port to listen on (non-privileged ports are > 1023)
 
 class MessageParser:
 
@@ -47,8 +47,13 @@ class MessageParser:
 if __name__ == "__main__":
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((HOST, PORT))
-    
-    parser = MessageParser(sock, JavaTunnel())
+    predictors = [
+            BotPredictor("../AIConnection/example_data/bcpvsthunder/hpmodel/", "../AIConnection/example_data/bcpvsthunder/actionmodel/"),
+            BotPredictor("../AIConnection/example_data/bcpvsutal/hpmodel/", "../AIConnection/example_data/bcpvsutal/actionmodel/"),
+            BotPredictor("../AIConnection/example_data/bcpvssimpleai/hpmodel/", "../AIConnection/example_data/bcpvssimpleai/actionmodel/")
+        ]
+    predictor_names = ["Thunder","UtalFighter", "SimpleAI"]
+    parser = MessageParser(sock, JavaTunnel(predictors, predictor_names))
     parser.startParsing()
 
 
